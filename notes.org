@@ -1,0 +1,13 @@
+
+* Chapter 1
+LLM
+  - Neural network designed to understand, generate, and respond to human-like text.
+  - Trained on massive amounts of text data (publicly available text on the internet)
+
+    Custom-built LLMs can outperform general-purpose LLMs
+    BloombergGPT (specialized for finance) and
+LLMs tailored for medical question answering (see appendix B for more details).
+
+
+
+* 
