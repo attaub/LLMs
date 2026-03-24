@@ -1,0 +1,272 @@
+* Chapetr 01
+#+TITLE: Chapetr 01
+#+AUTHOR: ATTA
+#+STARTUP: overview
+#+OPTIONS: toc:2
+
+* Table of contents :toc:
+- [[#chapetr-01][Chapetr 01]]
+- [[#intro][Intro]]
+- [[#what-is-an-llm][What is an LLM?]]
+- [[#applications-of-llms][Applications of LLMs]]
+- [[#stages-of-building-and-using-llms][Stages of building and using LLMs]]
+- [[#introducing-the-transformer-architecture][Introducing the transformer architecture]]
+- [[#utilizing-large-datasets][Utilizing large datasets]]
+- [[#a-closer-look-at-the-gpt-architecture][A closer look at the GPT architecture]]
+- [[#building-a-large-language-model][Building a large language model]]
+
+* Intro
+
+LLMs are deep neural network models 
+New era for NLP
+
+Traditional methods excelled
+at categorization tasks and pattern recognition
+that could be captured with handcrafted rules or simpler models.
+
+Traditional methods underperformed in language tasks
+that demanded complex understanding and generation abilities
+  such as parsing detailed instructions,
+  conducting contextual analysis,
+  and creating coherent and contextually appropriate original text.
+
+They could not write an email from a list of keywords
+
+
+LLMs have capabilities to understand, generate, and interpret human language.
+
+Understand:
+  process and generate text in ways that appear coherent and contextually relevant
+  not that they possess human-like consciousness or comprehension.
+
+LLMs are trained on vast quantities of text data
+
+This large-scale training allows LLMs to capture deeper contextual information and subtleties of human language compared to previous approaches.
+
+LLMs have significantly improved performance in NLP tasks:
+   text translation
+   sentiment analysis
+   question answering
+   and many more
+
+Earlier NLP models were typically designed for specific tasks, such as text categorization, language translation, etc.
+
+LLMs demonstrate a broader proficiency across a wide range of NLP tasks.
+
+The success behind LLMs is due to
+  the transformer architecture
+  and the vast amounts of data on which LLMs are trained,
+  allowing them to capture a wide variety of linguistic nuances,
+  contexts,
+  and patterns that would be challenging to encode manually.
+
+This shift toward has fundamentally transformed NLP,
+providing more capable tools for understanding and interacting with human language.
+
+* What is an LLM?
+
+A neural network designed to understand, generate, and respond to human like text.
+
+Deep neural networks trained on massive amounts of text data
+
+The "large" refers to both the model’s size in terms of parameters and the immense dataset on which it’s trained.
+
+Tens or even hundreds of billions of parameters to predict the next word in a sequence.
+
+Transformer allows them to pay selective attention to different parts of the input when making predictions, making them especially adept at handling the nuances and complexities of human language.
+
+Since LLMs are also often referred to as a form of GenAI
+
+The algorithms used to implement AI are the focus of the field of machine learning.
+
+Machine learning involves the development of algorithms that can learn from and make predictions or decisions based on data without being explicitly programmed.
+
+Deep learning is a subset of machine learning that focuses on utilizing neural networks with three or more layers to model complex patterns and abstractions in data.
+
+Traditional machine learning requires manual feature extraction. 
+
+
+The field of AI also includes other approaches,
+    using rule-based systems,
+    genetic algorithms,
+    expert systems,
+    fuzzy logic,
+    or symbolic reasoning.
+
+In traditional machine learning,
+human experts might manually extract features from email text
+such as the frequency of certain trigger words (for example, "prize", "win", "free"),
+the number of exclamation marks,
+use of all uppercase words,
+or the presence of suspicious links.
+
+Deep learning does not require manual feature extraction.
+
+* Applications of LLMs
+
+Machine translation
+Generation of novel texts
+Sentiment analysis
+Text summarization
+Content creation (writing fiction, articles, and even computer code)
+Powering sophisticated chatbots and virtual assistants
+LLMs may be used for effective knowledge retrieval from vast volumes of text
+
+* Stages of building and using LLMs
+
+Custom-built LLMs,  tailored for specific tasks or domains—can outperform general-purpose LLMs
+BloombergGPT
+
+Do not to share sensitive data with third-party LLM providers
+
+Developing smaller custom LLMs enables deployment directly on customer devices 
+
+Local implementation can significantly decrease latency and reduce server-related costs
+
+Grant developers complete autonomy, allowing them to control updates and modifications to the model as needed
+
+The general process of creating an LLM includes pretraining and fine-tuning
+
+The "pre" in "pretraining" refers to the initial phase where a model like an LLM is trained on a large, diverse dataset to develop a broad understanding of language
+
+This pretrained model then serves as a foundational resource that can be further refined through fine-tuning
+
+Fine-tuning is a process where the model is specifically trained on a narrower dataset that is more specific to particular tasks or domains.
+
+The first step in creating an LLM is to train it on a large corpus of text data
+
+"raw" refers to the fact that this data is just regular text without any labeling information
+
+LLMs use self-supervised learning, where the model generates its own labels from the input data
+
+GPT-3 model is capable of text completion
+It has limited few-shot capabilities
+It can learn to perform new tasks based on only a few examples instead of needing extensive training data
+
+After obtaining a pretrained LLM, further train it on labeled data, also known as fine-tuning
+
+The two most popular categories of fine-tuning LLMs are
+    instruction fine-tuning
+    classification fine-tuning
+
+In instruction fine-tuning, the labeled dataset consists of instruction and answer pairs, such as a query to translate a text accompanied by the correctly translated text.
+
+In classification fine-tuning, the labeled dataset consists of texts and associated class labels.
+
+* Introducing the transformer architecture
+
+To understand LLMs, understand the original transformer
+
+The transformer architecture consists of two submodules: an encoder and a decoder
+
+The encoder module processes the input text and encodes it into a series of numerical representations or vectors that capture the contextual information of the input
+
+The decoder module takes these encoded vectors and generates the out-put text
+
+In a translation task, the encoder would encode the text from the source language into vectors, and the decoder would decode these vectors to generate text in the target language
+
+Both the encoder and decoder consist of many layers connected by a so-called self-attention mechanism
+
+Self-attention mechanism allows the model to weigh the importance of different words or tokens in a sequence relative to each other
+
+This mechanism enables the model to capture long-range dependencies and contextual relationships within the input data, enhancing its ability to generate coherent and contextually relevant output
+
+Later variants of the transformer architecture, such as BERT and the various GPT models, built on this concept to adapt this architecture for different tasks
+
+GPT is designed for generative tasks
+BERT specializes in masked word prediction
+
+BERT can classify text, including sentiment prediction and document categorization
+X uses BERT to detect toxic content
+
+GPT focuses on the decoder portion of the original transformer architecture
+designed for tasks that require generating texts
+
+This includes machine translation, text summarization, fiction writing, writing computer code, and more
+
+GPT models, primarily designed and trained to perform text completion tasks, also show remarkable versatility in their capabilities
+
+These models are adept at executing both zero-shot and few-shot learning tasks
+
+Zero-shot learning refers to the ability to generalize to completely unseen tasks without any prior specific examples
+
+On the other hand, few-shot learning involves learning from a minimal number of examples the user provides as input
+
+* Utilizing large datasets
+
+The large training datasets for popular GPT- and BERT-like models represent diverse and comprehensive text corpora encompassing billions of words, which include a vast array of topics and natural and computer languages
+
+A token is a unit of text that a model reads and the number of tokens in a dataset is roughly equivalent to the number of words and punctuation characters in the text
+
+The scale and diversity of training dataset allow these models to perform well on diverse tasks
+
+CommonCrawl dataset consists of 410 billion tokens and requires about 570 GB of storage
+
+GPT-3, LLaMA have expanded their training scope to include additional data sources
+Arxiv research papers (92 GB) and StackExchange’s code-related Q&As (78 GB)
+
+Dolma: An Open Corpus of Three Trillion Tokens for LLM Pretraining Research by Soldaini et al
+
+Pretraining LLMs requires access to significant resources and is very expensive.
+The GPT-3 pretraining cost is estimated to be $4.6 million in terms of cloud computing credits
+
+Many pretrained LLMs, available as open source models, can be used as general-purpose tools to write, extract, and edit texts that were not part of the training data.
+
+LLMs can be fine-tuned on specific tasks with rela- tively smaller datasets, reducing the computational resources needed and improving performance.
+
+* A closer look at the GPT architecture
+GPT was originally introduced in the paper "Improving Language Understanding by Generative Pre-Training" 
+
+GPT-3 is a scaled-up version of this model that has more parameters and was trained on a larger dataset
+
+The original model offered in ChatGPT was created by fine-tuning GPT-3 on a large instruction dataset using a method from OpenAI’s InstructGPT paper 
+
+These models are competent text completion models
+They can carry out other tasks such as spelling correction, classification, or language translation
+
+GPT models are pretrained on a relatively simple next-word prediction task
+
+The system learns to predict the upcoming word in a sentence by looking at the words that have come before it
+
+This approach helps the model understand how words and phrases typically fit together in language, forming a foundation that can be applied to various other tasks
+
+The next-word prediction task is a form of self-supervised learning, which is a form of self-labeling
+
+This means that we don’t need to collect labels for the training data explicitly but can use the structure of the data itself
+
+we can use the next word in a sentence or document as the label that the model is supposed to predict
+
+Since this next-word prediction task allows us to create labels "on the fly," it is possible to use massive unlabeled text datasets to train LLMs
+
+The general GPT architecture is relatively simple, it is just the decoder part without the encoder.
+
+Since decoder-style models like GPT generate text by predicting text one word at a time, they are considered a type of autoregressive model
+
+Autoregressive models incorporate their previous outputs as inputs for future predictions
+
+In GPT, each new word is chosen based on the sequence that precedes it, which improves the coherence of the resulting text
+
+Architectures such as GPT-3 are also significantly larger than the original transformer model
+
+The original transformer repeated the encoder and decoder blocks six times
+GPT-3 has 96 transformer layers and 175 billion parameters in total
+
+Although the original transformer model was explicitly designed for language translation,
+GPT models aimed at next-word prediction, are also capable of performing translation tasks
+
+This capability was initially unexpected to researchers
+
+The ability to perform tasks that the model wasn’t explicitly trained to perform is called an emergent behavior.
+
+This capability isn’t explicitly taught during training but emerges as a natural consequence of the model’s exposure to vast quantities of multi- lingual data in diverse contexts
+
+The fact that GPT models can “learn” the translation patterns between languages and perform translation tasks even though they weren’t specifically trained for it demonstrates the benefits and capabilities of these large-scale, generative language models
+
+We can perform diverse tasks without using diverse models for each.
+
+* Building a large language model
+
+Take the fundamental idea behind GPT as a blueprint and tackle this in three stages
+    Stage 1: Fundamental data preprocessing steps and coding the attention mechanism
+    Stage 2: Code and pretrain a GPT-like LLM capable of generating new texts.
+    Stage 3: Take a pretrained LLM and fine-tune it to follow instruc-tions such as answering queries or classifying texts—the most common tasks in many real-world applications and research. 
