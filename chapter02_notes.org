@@ -1,0 +1,164 @@
+* Chapter 02 Working with text data 
+#+TITLE: Chapter 02  Working with text data 
+#+AUTHOR: ATTA
+#+STARTUP: overview
+#+OPTIONS: toc:2
+
+* Table of contents :toc:
+- [[#chapter-02-working-with-text-data][Chapter 02 Working with text data]]
+- [[#word-embeddings][Word Embeddings]]
+- [[#tokenizing-text][Tokenizing text]]
+- [[#converting-tokens-into-token-ids][Converting tokens into token IDs]]
+- [[#adding-special-context-tokens][Adding special context tokens]]
+- [[#byte-pair-encoding][Byte pair encoding]]
+- [[#data-sampling-with-a-sliding-window][Data sampling with a sliding window]]
+- [[#creating-token-embeddings][Creating token embeddings]]
+- [[#encoding-word-positions][Encoding word positions]]
+
+* Word Embeddings 
+
+During the pretraining stage, LLMs process text one word at a time
+Train LLMs with millions to billions of parameters using a next-word prediction task
+Further fine-tune to follow general instructions or perform specific target tasks
+Prepare input text for training LLMs
+Split text into individual word and subword tokens
+Encode into vector representations for the LLM
+
+Byte pair encoding is utilized in popular LLMs like GPT
+Implement a sampling and data-loading strategy to produce the input-output pairs necessary 
+
+Text is categorical, not compatible with the mathematical operations
+
+Represent words as continuous-valued vectors
+
+Converting data into a vector format is often referred to as embedding
+
+Different data formats require distinct embedding models
+
+An embedding is a mapping from discrete objects, such as words, images, or even entire documents, to points in a continuous vector space
+
+Word embeddings are the most common form of text embedding
+
+There are also embeddings for sentences, paragraphs, or whole documents
+
+Sentence or paragraph embeddings are popular choices for retrieval-augmented generation
+
+Retrieval-augmented generation combines generation (like producing text) with retrieval (like searching an external knowledge base) to pull relevant information when generating text
+
+Word2Vec approach for word emabedding
+Neural network architecture to generate word embeddings by predicting the context of a word given the target word or vice versa
+
+Words that appear in similar contexts tend to have similar meanings
+
+When projected into two-dimensional word embeddings, similar terms are clustered together
+
+Varying dimensions, from one to thousands
+
+A higher dimensionality might capture more nuanced relationships but at the cost of computational efficiency
+
+
+LLMs commonly produce their own embeddings that are part of the input layer and are updated during training
+
+The advantage of optimizing the embeddings as part of the LLM training instead of using Word2Vec is that the embeddings are optimized to the specific task and data at hand
+
+Embedding size is a tradeoff between performance and efficiency
+
+The smallest GPT-2 models (117M and 125M parameters) use an embedding size of 768 dimensions
+
+The largest GPT-3 model (175B parameters) uses an embedding size of 12,288 dimensions
+
+* Tokenizing text 
+
+Split input text into individual tokens
+which are either individual words or special characters
+
+"The Verdict," a short story by Edith Wharton
+
+Tokenize this 20,479-character short story into individual words and special characters
+that we can then turn into embeddings for LLM training
+
+use Python’s regular expression library re to split this text to obtain a list of tokens
+
+This simple tokenization scheme mostly works for separating the example text into individual words
+
+Some words are still connected to punctuation characters
+
+Have as separate list entries for punctuation 
+
+Keep capitalization
+
+The list still includes whitespace characters
+
+
+Remove these redundant characters
+
+Modify the tokenization scheme so that it can also handle other types of punctuation
+
+Removing whitespaces reduces the memory and computing requirements
+
+Keeping whitespaces can be useful if we train models that are sensitive to the exact structure of the text (Python code sensitive to indentation and spacing)
+
+
+Apply this tokenizer to Edith Wharton’s entire short story
+
+* Converting tokens into token IDs 
+
+Produce the token IDs by converting tokens from a Python string to an integer representation to 
+
+Then convert the token IDs into embedding vectors
+
+Build a vocabulary first
+
+Map each unique word and special character to a unique integer
+
+
+To convert the outputs of an LLM from numbers back into text, create an inverse version of the vocabulary that maps token IDs back to the corresponding text tokens
+
+
+Implement a complete tokenizer class in Python with
+    an encode method 
+    a decode method 
+
+* Adding special context tokens 
+
+Modify the tokenizer to handle unknown words
+
+Address the usage and addition of special context tokens
+that can enhance a model's understanding of context or other relevant information in the text
+
+These special tokens can include markers for unknown words and document boundaries
+<|unk|> and <|endoftext|>
+
+Modify the tokenizer to use an <|unk|> token if it encounters a word that is not part of the vocabulary
+
+Add a token between unrelated texts
+insert a token before each document or book that follows a previous text source
+
+This helps the LLM understand that although these text sources are concatenated for training, they are, in fact, unrelated
+
+[BOS] (beginning of sequence)
+This token marks the start of a text
+It signifies to the LLM where a piece of content begins
+
+[EOS] (end of sequence)
+This token is positioned at the end of a text and is especially useful when concatenating multiple unrelated texts, similar to <|endoftext|>
+
+[PAD] (padding)
+When training LLMs with batch sizes larger than one, the batch might contain texts of varying lengths
+To ensure all texts have the same length, the shorter texts are extended or “padded” using the [PAD] token, up to the length of the longest text in the batch
+
+The tokenizer used for GPT models does not need any of these tokens
+It only uses an <|endoftext|> token for simplicity.
+<|endoftext|> is analogous to the [EOS] token.
+<|endoftext|> is also used for padding.
+when training on batched inputs, we typically use a mask, meaning we don’t attend to padded tokens.
+Thus, the specific token chosen for padding becomes inconsequential
+the tokenizer used for GPT models also doesn’t use an <|unk|> token for out-of-vocabulary words
+GPT models use a byte pair encoding tokenizer, which breaks words down into subword units, which we will discuss next
+
+* Byte pair encoding 
+
+
+* Data sampling with a sliding window 
+* Creating token embeddings 
+* Encoding word positions 
