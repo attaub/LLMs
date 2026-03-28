@@ -45,7 +45,7 @@ Sentence or paragraph embeddings are popular choices for retrieval-augmented gen
 
 Retrieval-augmented generation combines generation (like producing text) with retrieval (like searching an external knowledge base) to pull relevant information when generating text
 
-Word2Vec approach for word emabedding
+*Word2Vec* approach for word emabedding
 Neural network architecture to generate word embeddings by predicting the context of a word given the target word or vice versa
 
 Words that appear in similar contexts tend to have similar meanings
@@ -75,9 +75,9 @@ which are either individual words or special characters
 "The Verdict," a short story by Edith Wharton
 
 Tokenize this 20,479-character short story into individual words and special characters
-that we can then turn into embeddings for LLM training
+We can then turn the tokens into embeddings for LLM training
 
-use Python’s regular expression library re to split this text to obtain a list of tokens
+use Python's regular expression library re 
 
 This simple tokenization scheme mostly works for separating the example text into individual words
 
@@ -86,43 +86,26 @@ Some words are still connected to punctuation characters
 Have as separate list entries for punctuation 
 
 Keep capitalization
-
 The list still includes whitespace characters
-
-
 Remove these redundant characters
-
-Modify the tokenization scheme so that it can also handle other types of punctuation
-
+Modify the tokenization scheme to handle other types of punctuation
 Removing whitespaces reduces the memory and computing requirements
-
-Keeping whitespaces can be useful if we train models that are sensitive to the exact structure of the text (Python code sensitive to indentation and spacing)
-
+Keeping whitespaces is useful to train models that are sensitive to the exact structure of the text (Python code sensitive to indentation and spacing)
 
 Apply this tokenizer to Edith Wharton’s entire short story
 
 * Converting tokens into token IDs 
-
 Produce the token IDs by converting tokens from a Python string to an integer representation to 
-
 Then convert the token IDs into embedding vectors
-
 Build a vocabulary first
-
 Map each unique word and special character to a unique integer
-
-
 To convert the outputs of an LLM from numbers back into text, create an inverse version of the vocabulary that maps token IDs back to the corresponding text tokens
-
-
 Implement a complete tokenizer class in Python with
     an encode method 
     a decode method 
 
 * Adding special context tokens 
-
 Modify the tokenizer to handle unknown words
-
 Address the usage and addition of special context tokens
 that can enhance a model's understanding of context or other relevant information in the text
 
@@ -158,7 +141,118 @@ GPT models use a byte pair encoding tokenizer, which breaks words down into subw
 
 * Byte pair encoding 
 
+A more sophisticated tokenization scheme based on byte pair encoding (BPE)
+The BPE tokenizer was used to train LLMs such as GPT-2, GPT-3
+Use an existing Python open source library called tiktoken (implemented in Rust)
+The <|endoftext|> token is assigned a relatively large token ID, namely, 50256.
+Has a total vocabulary size of 50,257, with <|endoftext|> being assigned the largest token ID.
+It encodes and decodes unknown words correctly (without using <|unk|> tokens)
+It breaks down words that aren’t in its predefined vocabulary into smaller subword units or even individual characters, enabling it to handle out-of-vocabulary words.
+In the next stage, it merges character combinations that frequently occur together into subwords.
 
 * Data sampling with a sliding window 
+
+Generate the input–target pairs required for training an LLM
+LLMs are pretrained by predicting the next word in a text
+Create two variables, x and y, where x contains the input tokens and y contains the targets
+Implement an efficient data loader 
+
+Return two tensors, an input tensor containing the text that the LLM sees and a target tensor that includes the targets for the LLM to predict
+
+It is common to train LLMs with input sizes of at least 256.
+
+Test the dataloader with a batch size of 1 for an LLM with a context size of 4
+
+#+BEGIN_SRC python
+  
+second_batch = next(data_iter)
+print(second_batch)
+
+#+END_SRC 
+
 * Creating token embeddings 
+
+The last step: Convert the token IDs into embedding vectors
+Initialize these embedding weights with random values
+Embedding is necessary since deep neural networks trained with the backpropagation algorithm.
+
+We have the following four input tokens with IDs 2, 3, 5, and 1
+Suppose we have a small vocabulary of only 6 words
+Create embeddings of size 3
+Instantiate an embedding layer in PyTorch
+
+#+BEGIN_SRC python
+input_ids = torch.tensor([2, 3, 5, 1])
+vocab_size = 6
+output_dim = 3
+torch.manual_seed(123)
+embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+print(embedding_layer.weight)
+print(embedding_layer(torch.tensor([3])))
+#+END_SRC 
+
 * Encoding word positions 
+
+The deterministic, position-independent embedding of the token ID is good
+for reproducibility purposes
+self-attention mechanism of LLMs itself is also position-agnostic
+Helpful to inject additional position information into the LLM
+use two broad categories of position-aware embeddings
+    relative positional embeddings
+    absolute positional embeddings
+
+Absolute positional embeddings are directly associated with specific positions in a sequence
+for each position in the input sequence, a unique embedding is added to the token’s embedding to convey its exact location
+The first token will have a specific positional embedding,
+the second token another distinct embedding,
+and so on,
+
+The emphasis of relative positional embeddings is on the relative position or distance between tokens
+
+The model learns the relationships in terms of "how far apart" rather than "at which exact position."
+
+The model can also generalize better to sequences of varying lengths, even if it hasn't seen such lengths during training.
+
+The choice between them often depends on the specific application and the nature of the data being processed
+
+OpenAI's GPT models use absolute positional embeddings that are optimized during the training process rather than being fixed or predefined like the positional encodings in the original transformer model
+
+This optimization process is part of the model training itself.
+
+Consider realistic embedding sizes and encode the input tokens into a 256-dimensional vector representation
+
+Assume that the token IDs were created by the BPE tokenizer we implemented earlier
+
+
+#+BEGIN_SRC python
+vocab_size = 50257
+output_dim = 256
+token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
+
+max_length = 4
+
+dataloader = create_dataloader_v1(
+    raw_text, batch_size=8, max_length=max_length,
+    stride=max_length, shuffle=False
+)
+
+data_iter = iter(dataloader)
+inputs, targets = next(data_iter)
+
+print("Token IDs:\n", inputs)
+print("\nInputs shape:\n", inputs.shape)
+
+token_embeddings = token_embedding_layer(inputs)
+print(token_embeddings.shape)
+torch.Size([8, 4, 256])
+
+context_length = max_length
+pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
+pos_embeddings = pos_embedding_layer(torch.arange(context_length))
+print(pos_embeddings.shape)
+
+input_embeddings = token_embeddings + pos_embeddings
+print(input_embeddings.shape)
+
+
+#+END_SRC 
