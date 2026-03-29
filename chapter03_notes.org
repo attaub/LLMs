@@ -1,0 +1,213 @@
+* Coding Attention Mechanisms
+#+TITLE: Coding Attention Mechanisms
+#+AUTHOR: ATTA
+#+STARTUP: overview
+#+OPTIONS: toc:2
+
+* Table of contents :toc:
+- [[#coding-attention-mechanisms][Coding Attention Mechanisms]]
+- [[#key-points][Key points]]
+- [[#the-problem-with-modeling-long-sequences][The problem with modeling long sequences]]
+- [[#capturing-data-dependencies-with-attention-mechanisms][Capturing data dependencies with attention mechanisms]]
+- [[#attending-to-different-parts-of-the-input-with-self-attention][Attending to different parts of the input with self-attention]]
+  - [[#a-simple-self-attention-mechanism-without-trainable-weights][A simple self-attention mechanism without trainable weights]]
+  - [[#computing-attention-weights-for-all-input-tokens][Computing attention weights for all input tokens]]
+- [[#implementing-self-attention-with-trainable-weights][Implementing self-attention with trainable weights]]
+  - [[#computing-the-attention-weights-step-by-step][Computing the attention weights step by step]]
+- [[#hiding-future-words-with-causal-attention][Hiding future words with causal attention]]
+- [[#extending-single-head-attention-to-multi-head-attention][Extending single-head attention to multi-head attention]]
+
+* Key points
+
+The reasons for using attention mechanisms in neural networks
+
+A basic self-attention framework, progressing to an enhanced self-attention mechanism
+
+A causal attention module that allows LLMs to generate one token at a time
+
+Masking randomly selected attention weights with dropout to reduce overfitting
+
+Stacking multiple causal attention modules into a multi-head attention module
+
+
+Explore attention mechanisms in isolation
+focus on them at a mechanistic level
+Code the remaining parts of the LLM to see it in action and to create a model to generate text
+
+Four different variants of attention mechanisms
+A compact and efficient implementation of multi-head attention
+Plug it into the LLM architecture 
+
+* The problem with modeling long sequences 
+Goal: develop a language translation model 
+Can't simply translate a text word by word due to the grammatical structures 
+To address this problem, use a deep neural network with two submodules
+an encoder and a decoder
+Encoder first reads in and processes the entire text
+Decoder produces the translated text
+RNNs were the most popular encoder–decoder architecture
+
+In an encoder–decoder RNN, the encoder processes the input sequentially
+The encoder updates its hidden state at each step
+The encoder tries to capture the entire meaning of the input sentence in the final hidden state
+The decoder then takes this final hidden state
+and starts generating the translated sentence, one word at a time
+It also updates its hidden state at each step,
+The hidden state is supposed to carry the context necessary for the next-word prediction
+
+An encoder–decoder RNN can't directly access earlier hidden states from the encoder during the decoding phase.
+It relies solely on the current hidden state, which encapsulates all relevant information
+This can lead to a loss of context
+It is not essential to understand RNNs to build an LLM
+Encoder–decoder RNNs had a shortcoming that motivated the design of attention mechanisms
+
+* Capturing data dependencies with attention mechanisms 
+
+RNNs don't work well for longer texts
+They don't have direct access to previous words in the input
+One major shortcoming:
+   the RNN must remember the entire encoded input in a single hidden state before passing it to the decoder
+
+Researchers developed the Bahdanau attention mechanism for RNNs in 2014
+Which modifies the encoder–decoder RNN
+The decoder can selectively access different parts of the input sequence at each decoding step
+
+Only three years later, researchers found that RNN architectures are not required for building deep neural networks for natural language processing and proposed the original transformer architecture including a self-attention mechanism inspired by the Bahdanau attention mechanism
+
+
+Self-attention is a mechanism that allows each position in the input sequence to consider the relevancy of, or "attend to," all other positions in the same sequence when computing the representation of a sequence
+
+It is a key component of contemporary LLMs based on the transformer architecture
+
+* Attending to different parts of the input with self-attention 
+Learn inner workings of the self-attention mechanism
+Code it from the ground up
+
+Grasping fundamentals of self attention means you will have conquered one of the toughest aspects of LLM implementation 
+
+Start with a simplified version of it
+
+Then implement the self-attention mechanism with trainable weights used in LLMs
+
+The "self" refers to the mechanism's ability to compute attention weights by relating different positions within a single input sequence
+
+It assesses and learns the relationships and dependencies between various parts of the input itself
+
+Example: words in a sentence or pixels in an image
+
+In traditional attention mechanisms, the focus is on the relationships between elements of two different sequences, (attention between an input sequence and an output sequence) 
+** A simple self-attention mechanism without trainable weights
+
+Input sequence is denoted as x
+consisting of T elements represented as x(1) to x(T)
+
+This sequence typically represents text, such as a sentence, that has already been transformed into token embeddings
+
+
+Example:
+  input text like: "Your journey starts with one step."
+  x(1) corresponds to a d-dimensional embedding vector representing the  token "Your"
+
+These input vectors are three-dimensional embeddings # why 3
+
+Goal: calculate context vectors z(i) for each element x(i) 
+
+A context vector can be interpreted as an enriched embedding vector
+
+x(2) is embedding vector corresponding to the token "journey" corresponding context vector z(2)
+
+z(2) contains information about x(2) and all other input elements x(1) to x(T)
+
+They create enriched representations of each element in an input sequence by incorporating information from all other elements in the sequence
+
+# Add trainable weights that help an LLM learn to construct these context vectors so that they are relevant for the LLM to generate the next token
+
+First step of implementing self-attention is to compute the intermediate values ω,
+\omega referres to as attention scores
+
+In the context of self-attention mechanisms, the dot product determines the extent to which each element in a sequence focuses on, or "attends to," any other element
+
+Normalize each of the attention scores
+
+In practice, it's more common and advisable to use the softmax function for normalization
+
+This approach is better at managing extreme values and offers more favorable
+
+
+
+Attention weights
+Now that we have computed the normalized attention weights,
+calculate the context vector z(2) by multiplying the embedded input tokens, x(i), with the corresponding attention weights and then summing the resulting vectors
+
+** Computing attention weights for all input tokens
+Extend this computation to calculate attention weights and context vectors for all inputs
+
+* Implementing self-attention with trainable weights 
+
+Implement the self-attention mechanism (scaled dot-product attention) used in the original transformer architecture.
+
+
+The self-attention mechanism with trainable weights builds on the previous concepts
+
+Compute context vectors as weighted sums over the input vectors specific to a certain input element
+
+There are only slight differences compared to the basic self-attention mechanism we coded earlier
+
+The most notable difference is the introduction of weight matrices that are updated during model training
+
+These trainable weight matrices are crucial so that the model can learn to produce "good" context vectors
+
+Two subsections:
+   First) code it step by step as before
+   Second) organize the code into a compact Python class that can be imported into the LLM architecture
+
+
+** Computing the attention weights step by step
+Implement the self-attention mechanism step by step by introducing the three trainable weight matrices Wq, Wk, and Wv.
+
+These three matrices are used to project the embedded input tokens, x(i), into query, key, and value vectors, respectively
+
+
+*The rationale behind scaled-dot product attention*
+- Improve the training performance by avoiding small gradients
+- When scaling up the embedding dimension, large dot products can result in very small gradients during backpropagation due to the softmax function applied to them
+- As dot products increase, the softmax function behaves more like a step function, resulting in gradients nearing zero
+- These small gradients can drastically slow down learning or cause training to stagnate
+- The scaling by the square root of the embedding dimension is the reason why this self-attention mechanism is also called scaled-dot product attention.
+
+  
+
+*Weight parameters vs. attention weights*
+- In the weight matrices W, the term "weight" is short for "weight parameters," the values of a neural network that are optimized during training
+- This is not to be confused with the attention weights
+- Attention weights determine the extent to which a context vector depends on the different parts of the input
+- Weight parameters are the fundamental, learned coefficients that define the network’s connections, while attention weights are dynamic, context-specific values.
+
+*Why query, key, and value?*
+- The terms "key," "query” and "value"" are borrowed from the domain of information retrieval and databases
+- Similar concepts are used to store, search, and retrieve information
+- A query is analogous to a search query in a database
+- It represents the current item (e.g., a word or token in a sentence) the model focuses on or tries to understand
+- The query is used to probe the other parts of the input sequence to determine how much attention to pay to them
+- The key is like a database key used for indexing and searching
+- In the attention mechanism, each item in the input sequence (e.g., each word in a sentence) has an associated key
+- These keys are used to match the query
+- The value in this context is similar to the value in a key-value pair in a database
+- It represents the actual content or representation of the input items
+- Once the model determines which keys (and thus which parts of the input) are most relevant to the query (the current focus item), it retrieves the corresponding values
+
+* Hiding future words with causal attention 
+For many LLM tasks, you will want the self-attention mechanism to consider only the
+tokens that appear prior to the current position when predicting the next token in a
+sequence. Causal attention, also known as masked attention, is a specialized form of self-
+attention. It restricts a model to only consider previous and current inputs in a sequence
+when processing any given token when computing attention scores. This is in contrast
+to the standard self-attention mechanism, which allows access to the entire input
+sequence at once.
+Now, we will modify the standard self-attention mechanism to create a causal
+attention mechanism, which is essential for developing an LLM in the subsequent
+chapters. To achieve this in GPT-like LLMs, for each token processed, we mask out
+the future tokens, which come after the current token in the input text, as illus-
+trated in figure 3.19. We mask out the attention weights above the diagonal, and we
+
+* Extending single-head attention to multi-head attention 
