@@ -1,4 +1,3 @@
-
 from importlib.metadata import version
 
 print("torch version:", version("torch"))
@@ -9,7 +8,7 @@ print("tiktoken version:", version("tiktoken"))
 
 # ## 2.2 Tokenizing text
 
-# tokenize text 
+# tokenize text
 
 import os
 import requests
@@ -36,9 +35,11 @@ print(raw_text[:99])
 
 import re
 
+
 def print_text(text_str):
     for ix, word in enumerate(text_str):
         print(f"{ix + 1}-->{word}")
+
 
 text = "Hello, world. This, is a test."
 
@@ -78,7 +79,7 @@ all_words = sorted(set(preprocessed))
 vocab_size = len(all_words)
 print(vocab_size)
 
-vocab = {token:integer for integer,token in enumerate(all_words)}
+vocab = {token: integer for integer, token in enumerate(all_words)}
 
 # The first 50 entries in this vocabulary:
 
@@ -93,14 +94,12 @@ for i, item in enumerate(vocab.items()):
 class SimpleTokenizerV1:
     def __init__(self, vocab):
         self.str_to_int = vocab
-        self.int_to_str = {i:s for s,i in vocab.items()}
+        self.int_to_str = {i: s for s, i in vocab.items()}
 
     def encode(self, text):
         preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
 
-        preprocessed = [
-            item.strip() for item in preprocessed if item.strip()
-        ]
+        preprocessed = [item.strip() for item in preprocessed if item.strip()]
         ids = [self.str_to_int[s] for s in preprocessed]
         return ids
 
@@ -130,9 +129,9 @@ tokenizer.decode(tokenizer.encode(text))
 # [BOS] beginning of sequence
 # [EOS] end of sequence
 # [PAD] Padding
-# [UNK] 
+# [UNK]
 # <|endoftext|> is analogous to the `[EOS]` token mentioned above
-# GPT also uses the <|endoftext|> for padding 
+# GPT also uses the <|endoftext|> for padding
 # GPT-2 does not use an <UNK> token, it uses a byte-pair encoding (BPE) tokenizer
 # Use the <|endoftext|> tokens between two independent sources of text
 
@@ -153,7 +152,7 @@ except ValueError:
 
 all_tokens = sorted(list(set(preprocessed)))
 all_tokens.extend(["<|endoftext|>", "<|unk|>"])
-vocab = {token:integer for integer,token in enumerate(all_tokens)}
+vocab = {token: integer for integer, token in enumerate(all_tokens)}
 len(vocab.items())
 
 for i, item in enumerate(list(vocab.items())[-5:]):
@@ -162,17 +161,18 @@ for i, item in enumerate(list(vocab.items())[-5:]):
 
 # adjust the tokenizer accordingly so that it knows when and how to use the new `<unk>` token
 
+
 class SimpleTokenizerV2:
     def __init__(self, vocab):
         self.str_to_int = vocab
-        self.int_to_str = { i:s for s,i in vocab.items()}
+        self.int_to_str = {i: s for s, i in vocab.items()}
 
     def encode(self, text):
         preprocessed = re.split(r'([,.:;?_!"()\']|--|\s)', text)
         preprocessed = [item.strip() for item in preprocessed if item.strip()]
         preprocessed = [
-            item if item in self.str_to_int 
-            else "<|unk|>" for item in preprocessed
+            item if item in self.str_to_int else "<|unk|>"
+            for item in preprocessed
         ]
 
         ids = [self.str_to_int[s] for s in preprocessed]
@@ -197,7 +197,7 @@ tokenizer.encode(text)
 tokenizer.decode(tokenizer.encode(text))
 
 # ## 2.5 BytePair encoding
-# allows the model to break down words that aren't in its predefined vocabulary 
+# allows the model to break down words that aren't in its predefined vocabulary
 
 import importlib
 import tiktoken
@@ -208,7 +208,7 @@ tokenizer = tiktoken.get_encoding("gpt2")
 
 text = (
     "Hello, do you like tea? <|endoftext|> In the sunlit terraces"
-     "of someunknownPlace."
+    "of someunknownPlace."
 )
 
 integers = tokenizer.encode(text, allowed_special={"<|endoftext|>"})
@@ -231,7 +231,7 @@ enc_sample = enc_text[50:]
 context_size = 4
 
 x = enc_sample[:context_size]
-y = enc_sample[1:context_size+1]
+y = enc_sample[1 : context_size + 1]
 
 print(f"x: {x}")
 print(f"y:      {y}")
@@ -239,20 +239,21 @@ print(f"y:      {y}")
 
 # One by one, the prediction would look like as follows:
 
-for i in range(1, context_size+1):
+for i in range(1, context_size + 1):
     context = enc_sample[:i]
     desired = enc_sample[i]
     print(context, "---->", desired)
 
-for i in range(1, context_size+1):
+for i in range(1, context_size + 1):
     context = enc_sample[:i]
     desired = enc_sample[i]
     print(tokenizer.decode(context), "---->", tokenizer.decode([desired]))
 
-# Install and import PyTorch 
+# Install and import PyTorch
 
 import torch
 from torch.utils.data import Dataset, DataLoader
+
 
 class GPTDatasetV1(Dataset):
     def __init__(self, txt, tokenizer, max_length, stride):
@@ -261,12 +262,14 @@ class GPTDatasetV1(Dataset):
 
         # Tokenize the entire text
         token_ids = tokenizer.encode(txt, allowed_special={"<|endoftext|>"})
-        assert len(token_ids) > max_length, "Number of tokenized inputs must at least be equal to max_length+1"
+        assert (
+            len(token_ids) > max_length
+        ), "Number of tokenized inputs must at least be equal to max_length+1"
 
         # Use a sliding window to chunk the book into overlapping sequences of max_length
         for i in range(0, len(token_ids) - max_length, stride):
-            input_chunk = token_ids[i:i + max_length]
-            target_chunk = token_ids[i + 1: i + max_length + 1]
+            input_chunk = token_ids[i : i + max_length]
+            target_chunk = token_ids[i + 1 : i + max_length + 1]
             self.input_ids.append(torch.tensor(input_chunk))
             self.target_ids.append(torch.tensor(target_chunk))
 
@@ -277,14 +280,21 @@ class GPTDatasetV1(Dataset):
         return self.input_ids[idx], self.target_ids[idx]
 
 
-def create_dataloader_v1(txt, batch_size=4, max_length=256, 
-                         stride=128, shuffle=True, drop_last=True,
-                         num_workers=0):
+def create_dataloader_v1(
+    txt,
+    batch_size=4,
+    max_length=256,
+    stride=128,
+    shuffle=True,
+    drop_last=True,
+    num_workers=0,
+):
 
     # Initialize the tokenizer
     tokenizer = tiktoken.get_encoding("gpt2")
 
     # Create dataset
+
     dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
 
     # Create dataloader
@@ -293,7 +303,7 @@ def create_dataloader_v1(txt, batch_size=4, max_length=256,
         batch_size=batch_size,
         shuffle=shuffle,
         drop_last=drop_last,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
 
     return dataloader
@@ -313,7 +323,9 @@ print(first_batch)
 second_batch = next(data_iter)
 print(second_batch)
 
-dataloader = create_dataloader_v1(raw_text, batch_size=8, max_length=4, stride=4, shuffle=False)
+dataloader = create_dataloader_v1(
+    raw_text, batch_size=8, max_length=4, stride=4, shuffle=False
+)
 
 data_iter = iter(dataloader)
 inputs, targets = next(data_iter)
@@ -351,8 +363,11 @@ token_embedding_layer = torch.nn.Embedding(vocab_size, output_dim)
 
 max_length = 4
 dataloader = create_dataloader_v1(
-    raw_text, batch_size=8, max_length=max_length,
-    stride=max_length, shuffle=False
+    raw_text,
+    batch_size=8,
+    max_length=max_length,
+    stride=max_length,
+    shuffle=False,
 )
 data_iter = iter(dataloader)
 inputs, targets = next(data_iter)
@@ -382,4 +397,3 @@ input_embeddings = token_embeddings + pos_embeddings
 print(input_embeddings.shape)
 
 # print(input_embeddings)
-

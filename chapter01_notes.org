@@ -269,4 +269,4 @@ We can perform diverse tasks without using diverse models for each.
 Take the fundamental idea behind GPT as a blueprint and tackle this in three stages
     Stage 1: Fundamental data preprocessing steps and coding the attention mechanism
     Stage 2: Code and pretrain a GPT-like LLM capable of generating new texts.
-    Stage 3: Take a pretrained LLM and fine-tune it to follow instruc-tions such as answering queries or classifying texts—the most common tasks in many real-world applications and research. 
+    Stage 3: Take a pretraiNed LLM and fine-tune it to follow instruc-tions such as answering queries or classifying texts—the most common tasks in many real-world applications and research. 
